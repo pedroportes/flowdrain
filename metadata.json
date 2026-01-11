@@ -1,0 +1,8 @@
+{
+  "name": "FlowDrain",
+  "description": "SaaS de gestão inteligente para desentupidoras e serviços hidráulicos.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
