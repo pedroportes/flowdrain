@@ -1,14 +1,21 @@
 import React from 'react';
-import { SalesPillars } from '../components/sections/SalesPillars';
+import { BenefitsHero } from '../components/sections/BenefitsHero';
+import { BenefitsGrid } from '../components/sections/BenefitsGrid';
+import { BenefitsComparison } from '../components/sections/BenefitsComparison';
 import { FinalCTA } from '../components/sections/FinalCTA';
+import { SEO } from '../components/SEO';
 
 export const BenefitsPage: React.FC = () => {
     return (
-        <div className="pt-20">
-            <div className="bg-brand-gray py-12 px-4 text-center">
-                <h1 className="text-4xl font-bold text-brand-dark">Por que escolher o FlowDrain?</h1>
-            </div>
-            <SalesPillars />
+        <div className="flex flex-col">
+            <SEO
+                title="Benefícios de Usar FlowDrain | Transforme sua Desentupidora"
+                description="Entenda como o FlowDrain traz autoridade, segurança e lucro para sua desentupidora. Saia do amadorismo e vire uma referência."
+            />
+            <BenefitsHero />
+            <BenefitsGrid />
+            <BenefitsComparison />
+            <div className="h-px bg-gray-100 max-w-7xl mx-auto w-full"></div>
             <FinalCTA />
         </div>
     );

@@ -5,11 +5,12 @@ import { SIGNUP_URL } from '../constants';
 export const Pricing: React.FC = () => {
     const plans = [
         {
-            name: "Essencial",
+            name: "Plano Inicial",
             price: "59,90",
+            checkoutUrl: "https://buy.stripe.com/fZu00iczf3o70nhegF5kk00",
             icon: <Star className="w-6 h-6 text-gray-400" />,
             features: [
-                "Até 1 técnico",
+                "Até 2 técnicos",
                 "Gestão de Clientes",
                 "Ordens de Serviço Simples",
                 "Suporte por Email"
@@ -19,6 +20,7 @@ export const Pricing: React.FC = () => {
         {
             name: "Pro Fluxo",
             price: "129,90",
+            checkoutUrl: "https://buy.stripe.com/8x25kC9n3aQzb1Vc8x5kk01",
             icon: <Zap className="w-6 h-6 text-brand-blue" />,
             features: [
                 "Até 5 técnicos",
@@ -32,6 +34,7 @@ export const Pricing: React.FC = () => {
         {
             name: "Operacional",
             price: "249,90",
+            checkoutUrl: "https://buy.stripe.com/aFa7sK56N2k35HB0pP5kk02",
             icon: <Truck className="w-6 h-6 text-gray-500" />,
             features: [
                 "Até 10 técnicos",
@@ -44,6 +47,7 @@ export const Pricing: React.FC = () => {
         {
             name: "Prime Fleet",
             price: "499,90",
+            checkoutUrl: "https://buy.stripe.com/7sY28q56N3o7fiba0p5kk03",
             icon: <Shield className="w-6 h-6 text-gray-500" />,
             features: [
                 "Técnicos Ilimitados",
@@ -98,15 +102,28 @@ export const Pricing: React.FC = () => {
                                 ))}
                             </ul>
 
-                            <a
-                                href={SIGNUP_URL}
-                                className={`block w-full py-3 rounded-xl font-bold text-center transition-all ${plan.highlight
-                                    ? 'bg-brand-blue text-white hover:bg-brand-blue-dark shadow-lg shadow-brand-blue/20'
-                                    : 'bg-gray-50 text-brand-dark hover:bg-gray-100'
-                                    }`}
-                            >
-                                Assinar Agora
-                            </a>
+                            <div className="flex flex-col gap-3 mt-auto">
+                                <a
+                                    href={plan.checkoutUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className={`block w-full py-3 rounded-xl font-bold text-center transition-all ${plan.highlight
+                                        ? 'bg-brand-blue text-white hover:bg-brand-blue-dark shadow-lg shadow-brand-blue/20'
+                                        : 'bg-brand-dark text-white hover:bg-gray-800'
+                                        }`}
+                                >
+                                    Assinar Agora
+                                </a>
+                                <a
+                                    href={SIGNUP_URL}
+                                    className={`block w-full py-3 rounded-xl font-bold text-center transition-all border-2 ${plan.highlight
+                                        ? 'border-brand-blue/30 text-brand-blue hover:bg-brand-blue/5'
+                                        : 'border-gray-200 text-gray-500 hover:border-gray-300 hover:text-gray-700'
+                                        }`}
+                                >
+                                    Criar Conta Grátis
+                                </a>
+                            </div>
                         </div>
                     ))}
                 </div>

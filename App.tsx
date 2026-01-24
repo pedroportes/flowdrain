@@ -13,6 +13,9 @@ import { PricingPage } from './pages/PricingPage';
 import { TermsPage } from './pages/TermsPage';
 import { PrivacyPage } from './pages/PrivacyPage';
 
+import { SuccessPage } from './pages/SuccessPage';
+import { CancelPage } from './pages/CancelPage';
+
 function App() {
   return (
     <Router>
@@ -27,6 +30,8 @@ function App() {
             <Route path="/planos" element={<PricingPage />} />
             <Route path="/termos" element={<TermsPage />} />
             <Route path="/privacidade" element={<PrivacyPage />} />
+            <Route path="/sucesso" element={<SuccessPage />} />
+            <Route path="/cancelado" element={<CancelPage />} />
           </Routes>
         </main>
         <Footer />
