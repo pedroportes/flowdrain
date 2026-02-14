@@ -1,0 +1,7 @@
+=== LINK GERADO COM SUCESSO ===
+
+ACTION_LINK:
+https://dltqxfyrltgbudtzxzot.supabase.co/auth/v1/verify?token=718a5f3dd5bcc905a038adcc77e099c6030854003c5ecc8ef0cf6ecd&type=recovery&redirect_to=https://app.gerenciaservicos.com.br/update-password
+
+REDIRECT_TO: https://app.gerenciaservicos.com.br/update-password
+TYPE: recovery

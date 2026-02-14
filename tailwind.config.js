@@ -8,8 +8,10 @@ export default {
     extend: {
       colors: {
         'brand-blue': '#2563EB',
+        'brand-blue-light': '#3B82F6',
         'brand-blue-dark': '#1E40AF',
         'brand-green': '#16A34A',
+        'brand-green-light': '#34D399',
         'brand-green-dark': '#166534',
         'brand-dark': '#0F172A',
         'brand-gray': '#F3F4F6',

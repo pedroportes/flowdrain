@@ -1,16 +1,22 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Check, Star, Zap, Truck, Shield } from 'lucide-react';
 import { SIGNUP_URL } from '../constants';
+import { startCheckout } from '../../services/checkoutService';
+import { getStoredAffiliateCode } from '../../utils/affiliate';
 
 export const Pricing: React.FC = () => {
+    const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
+
     const plans = [
         {
-            name: "Plano Inicial",
+            name: "Plano Solo",
             price: "59,90",
-            checkoutUrl: "https://buy.stripe.com/fZu00iczf3o70nhegF5kk00",
+            checkoutUrl: "https://buy.stripe.com/dRm28qgPv3o78TN2xX5kk05",
+            priceId: "",
             icon: <Star className="w-6 h-6 text-gray-400" />,
             features: [
-                "Até 2 técnicos",
+                "1 Usuário (Apenas Dono)",
+                "Sem acesso para técnicos",
                 "Gestão de Clientes",
                 "Ordens de Serviço Simples",
                 "Suporte por Email"
@@ -18,9 +24,24 @@ export const Pricing: React.FC = () => {
             highlight: false
         },
         {
+            name: "Essencial",
+            price: "98,90",
+            checkoutUrl: "https://buy.stripe.com/28EaEW1UBgaTfibdcB5kk06",
+            priceId: "",
+            icon: <Zap className="w-6 h-6 text-brand-blue" />,
+            features: [
+                "Até 3 técnicos",
+                "Gestão Financeira Básica",
+                "Relatórios Simples",
+                "Suporte Horário Comercial"
+            ],
+            highlight: false
+        },
+        {
             name: "Pro Fluxo",
             price: "129,90",
-            checkoutUrl: "https://buy.stripe.com/8x25kC9n3aQzb1Vc8x5kk01",
+            checkoutUrl: "https://buy.stripe.com/3cI3cuar75wf8TNgoN5kk07",
+            priceId: "",
             icon: <Zap className="w-6 h-6 text-brand-blue" />,
             features: [
                 "Até 5 técnicos",
@@ -34,7 +55,8 @@ export const Pricing: React.FC = () => {
         {
             name: "Operacional",
             price: "249,90",
-            checkoutUrl: "https://buy.stripe.com/aFa7sK56N2k35HB0pP5kk02",
+            checkoutUrl: "",
+            priceId: "",
             icon: <Truck className="w-6 h-6 text-gray-500" />,
             features: [
                 "Até 10 técnicos",
@@ -48,6 +70,7 @@ export const Pricing: React.FC = () => {
             name: "Prime Fleet",
             price: "499,90",
             checkoutUrl: "https://buy.stripe.com/7sY28q56N3o7fiba0p5kk03",
+            priceId: "",
             icon: <Shield className="w-6 h-6 text-gray-500" />,
             features: [
                 "Técnicos Ilimitados",
@@ -56,8 +79,76 @@ export const Pricing: React.FC = () => {
                 "Atendimento 24/7"
             ],
             highlight: false
+        },
+        {
+            name: "Plano Teste",
+            price: "1,99",
+            checkoutUrl: "https://buy.stripe.com/aFa7sK2YF2k39XR2xX5kk04",
+            priceId: "",
+            icon: <Shield className="w-6 h-6 text-purple-500" />,
+            features: [
+                "Plano para testes",
+                "Validação de comissão",
+                "Acesso completo (demo)",
+                "Cancelamento automático"
+            ],
+            highlight: false,
+            tag: "TESTE"
         }
     ];
+
+    /**
+     * Lida com o clique no botão de assinar.
+     * - AGORA: Prioriza links diretos (checkoutUrl) se existirem.
+     * - Anexa client_reference_id manualmente para garantir o afiliado.
+     * - Se não tiver link direto, usa o checkout dinâmico como fallback.
+     */
+    const handleSubscribe = async (plan: typeof plans[0]) => {
+        const affiliateCode = getStoredAffiliateCode();
+        console.log(`[Pricing] Iniciando assinatura: ${plan.name} (PriceID: ${plan.priceId}, Afiliado: ${affiliateCode || 'Nenhum'})`);
+
+        // 1. Prioridade: Link Direto (Stripe Payment Link)
+        if (plan.checkoutUrl) {
+            try {
+                const url = new URL(plan.checkoutUrl);
+                if (affiliateCode) {
+                    url.searchParams.set('client_reference_id', affiliateCode);
+                }
+                console.log('[Pricing] Redirecionando para Link Direto:', url.toString());
+                window.location.href = url.toString();
+                return;
+            } catch (err) {
+                console.warn('[Pricing] Erro ao processar checkoutUrl, usando fallback string logic:', err);
+                // Fallback simples se a URL for inválida para o construtor URL
+                let finalUrl = plan.checkoutUrl;
+                if (affiliateCode) {
+                    const separator = finalUrl.includes('?') ? '&' : '?';
+                    finalUrl += `${separator}client_reference_id=${affiliateCode}`;
+                }
+                window.location.href = finalUrl;
+                return;
+            }
+        }
+
+        // 2. Fallback: Checkout Dinâmico via Edge Function
+        const cleanPriceId = plan.priceId?.trim();
+        const hasValidId = cleanPriceId && !cleanPriceId.includes('PLACEHOLDER');
+
+        if (hasValidId) {
+            setLoadingPlan(plan.name);
+            try {
+                const checkoutUrl = await startCheckout(cleanPriceId, affiliateCode);
+                window.location.href = checkoutUrl;
+            } catch (err: any) {
+                console.error('[Pricing] Erro no checkout dinâmico:', err);
+                alert('Erro ao iniciar checkout: ' + (err.message || 'Erro desconhecido'));
+            } finally {
+                setLoadingPlan(null);
+            }
+        } else {
+            alert('Este plano não está disponível para contratação online no momento.');
+        }
+    };
 
     return (
         <section id="precos" className="py-20 bg-brand-gray">
@@ -65,6 +156,12 @@ export const Pricing: React.FC = () => {
                 <div className="text-center mb-16">
                     <h2 className="text-3xl md:text-4xl font-bold text-brand-dark mb-4">Escolha o Plano Ideal</h2>
                     <p className="text-gray-600 text-lg">Potencialize sua desentupidora com as ferramentas certas.</p>
+                    {/* Debug visual para o usuário verificar se o afiliado foi capturado */}
+                    {getStoredAffiliateCode() && (
+                        <p className="mt-2 text-sm text-green-600 font-medium bg-green-50 inline-block px-3 py-1 rounded-full border border-green-200">
+                            Afiliado ativo: {getStoredAffiliateCode()}
+                        </p>
+                    )}
                 </div>
 
                 <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 items-start">
@@ -103,17 +200,16 @@ export const Pricing: React.FC = () => {
                             </ul>
 
                             <div className="flex flex-col gap-3 mt-auto">
-                                <a
-                                    href={plan.checkoutUrl}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className={`block w-full py-3 rounded-xl font-bold text-center transition-all ${plan.highlight
+                                <button
+                                    onClick={() => handleSubscribe(plan)}
+                                    disabled={loadingPlan === plan.name}
+                                    className={`block w-full py-3 rounded-xl font-bold text-center transition-all disabled:opacity-60 disabled:cursor-wait ${plan.highlight
                                         ? 'bg-brand-blue text-white hover:bg-brand-blue-dark shadow-lg shadow-brand-blue/20'
                                         : 'bg-brand-dark text-white hover:bg-gray-800'
                                         }`}
                                 >
-                                    Assinar Agora
-                                </a>
+                                    {loadingPlan === plan.name ? 'Redirecionando...' : 'Assinar Agora'}
+                                </button>
                                 <a
                                     href={SIGNUP_URL}
                                     className={`block w-full py-3 rounded-xl font-bold text-center transition-all border-2 ${plan.highlight

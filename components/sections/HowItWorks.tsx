@@ -1,3 +1,4 @@
+import React from 'react';
 import { FileText, DollarSign, Smartphone, FileCheck, Bot } from 'lucide-react';
 
 export const HowItWorks: React.FC = () => {
